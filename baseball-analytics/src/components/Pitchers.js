@@ -1,29 +1,31 @@
 import React, { useState, useEffect } from 'react';
 
 function Pitchers() {
-  const [pitchers, setPitchers] = useState([]);
+  const [pitchers, setPitchers] = useState([]);  // State to store the pitchers data
 
+  // Function to fetch data from the API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/api/pitchers'); 
+        const response = await fetch('http://localhost:5000/scrape/pitchers'); // Adjust the URL if needed
         const data = await response.json();
-        setPitchers(data);
+        setPitchers(data); // Set the fetched data to the state
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching pitchers:', error);
       }
     };
 
     fetchData();
   }, []);
 
+  // Rendering the pitchers data
   return (
     <div>
       <h1>Probable Pitchers</h1>
       <ul>
         {pitchers.map((pitcher, index) => (
           <li key={index}>
-            {pitcher.pitcher} - {pitcher.team} - Throws: {pitcher.handedness} - vs {pitcher.opponent_team}
+            Name: {pitcher.Name}, Team: {pitcher.Team}, Handedness: {pitcher.Handedness}
           </li>
         ))}
       </ul>

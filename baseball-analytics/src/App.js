@@ -8,7 +8,7 @@ function App() {
       <header className="App-header">
         <h1>Baseball Analytics</h1>
       </header>
-      <Pitchers /> </div>
+      <Pitchers /></div>
   );
 }
 
