@@ -17,7 +17,8 @@ def get_probable_pitchers(url='https://baseballsavant.mlb.com/probable-pitchers'
             'handedness': handedness,
             'opponent_team': opponent_team
         })
-    # Print the extracted data
+
+    # Print the data to the console
     for data in pitchers_data:
         print(data)
     return pitchers_data

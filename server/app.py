@@ -1,56 +1,30 @@
-from flask import Flask, jsonify
-import sqlite3
+from flask import Flask
+import db
 from flask_cors import CORS
-from baseball_scraper import get_probable_pitchers 
+from scraping.players import scrape_players
+from scraping.teams import scrape_teams
+from scraping.pitchers import scrape_pitchers
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/pitchers/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-def get_db_connection():
-    conn = sqlite3.connect('baseball_data.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+@app.route('/scrape/players')
+def handle_scrape_players():
+    data = scrape_players()
+    db.save_players(data)
+    return {'status': 'success'}
 
-def create_db():
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS pitchers (
-            pitcher TEXT,
-            team TEXT,
-            handedness TEXT,
-            opponent_team TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
+@app.route('/scrape/teams')
+def handle_scrape_teams():
+    data = scrape_teams()
+    db.save_teams(data)
+    return {'status': 'success'}
 
-@app.route('/api/pitchers', methods=['GET'])
-def get_pitchers():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM pitchers')
-    pitchers = cur.fetchall()
-    cur.close()
-    conn.close()
-    return jsonify([dict(ix) for ix in pitchers])
-
-def insert_pitcher_data():
-    # pitchers_data = get_probable_pitchers()
-    pitchers_data = [
-        {'pitcher': 'Max Scherzer', 'team': 'Mets', 'handedness': 'R', 'opponent_team': 'Yankees'},
-        {'pitcher': 'Clayton Kershaw', 'team': 'Dodgers', 'handedness': 'L', 'opponent_team': 'Giants'}
-    ]
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.executemany('''
-        INSERT INTO pitchers (pitcher, team, handedness, opponent_team)
-        VALUES (?, ?, ?, ?)
-    ''', [(d['pitcher'], d['team'], d['handedness'], d['opponent_team']) for d in pitchers_data])
-    conn.commit()
-    conn.close()
+@app.route('/scrape/pitchers')
+def handle_scrape_pitchers():
+    pitchers = scrape_pitchers()
+    db.save_pitchers(pitchers)
+    return {'status': 'success'}
 
 if __name__ == '__main__':
-    create_db()  # Ensure the database and table are created
-    insert_pitcher_data()  # Optionally, insert some initial data
     app.run(debug=True)

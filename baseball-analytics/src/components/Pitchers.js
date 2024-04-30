@@ -7,9 +7,9 @@ function Pitchers() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/scrape/pitchers'); // Adjust the URL if needed
+        const response = await fetch('http://127.0.0.1:5000/scrape/pitchers');
         const data = await response.json();
-        setPitchers(data); // Set the fetched data to the state
+        setPitchers(data); // Setting the pitchers data in the state
       } catch (error) {
         console.error('Error fetching pitchers:', error);
       }
